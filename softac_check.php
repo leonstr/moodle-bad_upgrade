@@ -65,10 +65,11 @@ function file_check($ch, $wwwroot, $files) {
 	
 	foreach ($files as $file) {
 		$url = "$wwwroot/$file";
-
 		curl_setopt($ch, CURLOPT_URL, $url);
-		if (!curl_exec($ch)) {
-			$http_statuses[$file] = curl_error($ch);
+
+		if (curl_exec($ch) === false) {
+			$http_statuses[$file] = "Error " . curl_errno($ch) . ": "
+						. curl_error($ch);
 		} else {
 			$http_statuses[$file] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		}
@@ -107,6 +108,11 @@ function softac_check($wwwroot, $ver) {
 	$results = array();
 	$ch = curl_init();
 	
+	if ($ch === false) {
+		echo "<code>Curl failed to initialise</code>";
+		throw new Exception("Curl failed to initialise.");
+	}
+
 	 // Use HEAD so we don't actually transfer the file (via
 	 // https://stackoverflow.com/a/770200), we're just interested in the
 	 // 200 OK (file exists) or 404 Not Found in the header.
