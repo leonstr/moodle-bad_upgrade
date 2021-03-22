@@ -16,7 +16,7 @@
 	<head><title>Check for old Moodle files</title></head>
 	<body>
 <?php
-require_once('softac_check.php');
+require_once('stale_file_check.php');
 ?>
 <h1>Check for old Moodle files</h1>
 <p>When upgrading Moodle only the new version's source code files should be present. Before upgrade Moodle checks for some of the old version's files before proceeding. Some installers (Softaculous) remove only the checked files and leave behind all other old files.</p>
@@ -24,7 +24,7 @@ require_once('softac_check.php');
 <form action="./" method="GET">
 <p><label for="wwwroot">Moodle site:</label><input name="wwwroot">
 <label for="ver">Version:</label><select name="ver">
-<option value="310" selected>3.10</option>
+<option value="not_in_MOODLE_310_STABLE" selected>3.10</option>
 </select>
 <input type="submit">
 </form>

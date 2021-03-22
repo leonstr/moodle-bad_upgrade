@@ -105,6 +105,10 @@ function softac_check($wwwroot, $ver) {
 		$old_files[] = trim($line);
 	}
 
+	 // Remove subset of files checked by upgrade_stale_php_files_present()
+	$old_files = array_keys(array_diff_key(array_flip($old_files),
+				array_flip($someexamplesofremovedfiles)));
+
 	$results = array();
 	$ch = curl_init();
 	
