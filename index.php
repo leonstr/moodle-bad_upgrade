@@ -13,25 +13,53 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ?>
 <!DOCTYPE html><html lang=en-GB>
-	<head><title>Check for old Moodle files</title></head>
+	<head><title>Check for old Moodle files</title>
+		<style>
+td.status {
+	background: red;
+}
+td.status-404 {
+	background: green;
+}
+		</style>
+	</head>
 	<body>
 <?php
 require_once('stale_file_check.php');
+$versions = array("not_in_MOODLE_310_STABLE" => "3.10",
+			"not_in_MOODLE_311_STABLE" => "3.11");
+$url = "";
+$results = null;
+$ver = array_key_last($versions);
+
+if (isset($_GET['wwwroot']) && isset($_GET['ver'])) {
+	$url = $_GET['wwwroot'];
+	$ver = $_GET['ver'];
+	$results = softac_check($url, $ver);
+}
 ?>
 <h1>Check for old Moodle files</h1>
-<p>When upgrading Moodle only the new version's source code files should be present. Before upgrade Moodle checks for some of the old version's files before proceeding. Some installers (Softaculous) remove only the checked files and leave behind all other old files.</p>
-<p>This checker looks for the files that Moodle checks for and then checks for other files that should not be present. If all rows in the <q>stale</q> list are 404 but one or more rows in the <q>old</q> list are 200 then files from the previous version are still present. This may be adversely affecting your Moodle site's functionality. Follow <a href="https://docs.moodle.org/310/en/Upgrading#Standard_install_package">the upgrade steps</a> to resolve this.</p>
+<p>When upgrading Moodle only the new version's source code files should be present. Moodle will check for some of the old version's files before proceeding. The upgrade cannot start with these old files present.</p>
+<p>Some installers (Softaculous) remove only the files Moodle checks for but leaves behind all other old files. This may prevent your Moodle site functioning correctly. Follow <a href="https://docs.moodle.org/en/Upgrading#Standard_install_package">the upgrade steps</a> to resolve this.</p>
+<p>This checker looks for the files that Moodle checks for, then checks for some other files from the previous version. If all rows in the first list (<q>Stale</q> files) are 404 but one or more rows in the second list (Other old files) are 200 then files from the previous Moodle version are still present.</p>
 <form action="./" method="GET">
-<p><label for="wwwroot">Moodle site:</label><input name="wwwroot">
+<p><label for="wwwroot">Moodle site:</label><input name="wwwroot"
+	value="<?php echo $url; ?>">
 <label for="ver">Version:</label><select name="ver">
-<option value="not_in_MOODLE_310_STABLE" selected>3.10</option>
+<?php
+foreach($versions as $data_file => $label) {
+	if ($data_file === $ver) {
+		echo "<option value=\"$data_file\" selected>$label</option>\n";
+	} else {
+		echo "<option value=\"$data_file\">$label</option>\n";
+	}
+}
+?>
 </select>
 <input type="submit">
 </form>
 <?php
-
-if (isset($_GET['wwwroot']) && isset($_GET['ver'])) {
-	$results = softac_check($_GET['wwwroot'], $_GET['ver']);
+if (!empty($results)) {
 ?>
 	<h1><q>Stale</q> files</h1>
 	<p>Files that Moodle checks for.</p>
@@ -41,7 +69,7 @@ if (isset($_GET['wwwroot']) && isset($_GET['ver'])) {
 	$stalefilepresent = false;
 
 	foreach ($results['stale'] as $file => $status) {
-		echo "<tr><td>$file</td><td>$status</td></tr>" . PHP_EOL;
+		echo "<tr><td>$file</td><td class=\"status status-$status\">$status</td></tr>" . PHP_EOL;
 
 		if ($status != 404) {
 			$stalefilepresent = true;
@@ -63,7 +91,7 @@ if (isset($_GET['wwwroot']) && isset($_GET['ver'])) {
 	$old_file_count = 0;
 
 	foreach ($results['old'] as $file => $status) {
-		echo "<tr><td>$file</td><td>$status</td></tr>" . PHP_EOL;
+		echo "<tr><td>$file</td><td class=\"status status-$status\">$status</td></tr>" . PHP_EOL;
 
 		if ($status == 200) {
 			$old_file_count++;

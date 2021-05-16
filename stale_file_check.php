@@ -14,40 +14,23 @@
 
 	// List from lib/upgradelib.php:upgrade_stale_php_files_present()
     $someexamplesofremovedfiles = array(
-        // Removed in 3.10.
-        '/grade/grading/classes/privacy/gradingform_provider.php',
-        '/lib/coursecatlib.php',
-        '/lib/form/htmleditor.php',
-        '/message/classes/output/messagearea/contact.php',
-		/*
-        // Removed in 3.9.
-        '/course/classes/output/modchooser_item.php',
-        '/course/yui/build/moodle-course-modchooser/moodle-course-modchooser-min.js',
-        '/course/yui/src/modchooser/js/modchooser.js',
-        '/h5p/classes/autoloader.php',
-        '/lib/adodb/readme.txt',
-        '/lib/maxmind/GeoIp2/Compat/JsonSerializable.php',
-        // Removed in 3.8.
-        '/lib/amd/src/modal_confirm.js',
-        '/lib/fonts/font-awesome-4.7.0/css/font-awesome.css',
-        '/lib/jquery/jquery-3.2.1.min.js',
-        '/lib/recaptchalib.php',
-        '/lib/sessionkeepalive_ajax.php',
-        '/lib/yui/src/checknet/js/checknet.js',
-        '/question/amd/src/qbankmanager.js',
-        // Removed in 3.7.
-        '/lib/form/yui/src/showadvanced/js/showadvanced.js',
-        '/lib/tests/output_external_test.php',
-        '/message/amd/src/message_area.js',
-        '/message/templates/message_area.mustache',
-        '/question/yui/src/qbankmanager/build.json',
-        // Removed in 3.6.
-        '/lib/classes/session/memcache.php',
-        '/lib/eventslib.php',
-        '/lib/form/submitlink.php',
-        '/lib/medialib.php',
-        '/lib/password_compat/lib/password.php'
-		*/
+		'not_in_MOODLE_311_STABLE' => 
+			array(
+				// Removed in 3.11.
+				'/customfield/edit.php',
+				'/lib/phpunit/classes/autoloader.php',
+				'/lib/xhprof/README',
+				'/message/defaultoutputs.php',
+				'/user/files_form.php',
+			),
+		'not_in_MOODLE_310_STABLE' => 
+			array(
+				// Removed in 3.10.
+				'/grade/grading/classes/privacy/gradingform_provider.php',
+				'/lib/coursecatlib.php',
+				'/lib/form/htmleditor.php',
+				'/message/classes/output/messagearea/contact.php',
+			),
 		);
 
 /**
@@ -55,16 +38,16 @@
  * @param $ch Curl handle.
  * @param $wwwroot URL of the site, for example "https://moodle.example.com".
  * @param $files Array of files to check, for example:
- * array("lib/amd/src/search-input.js", "lib/jabber/XMPP/README.txt")
+ * array("/lib/amd/src/search-input.js", "/lib/jabber/XMPP/README.txt")
  * @return Associative array containing each file and the HTTP status, for
- * example array("lib/amd/src/search-input.js" => 200,
- * "lib/jabber/XMPP/README.txt" => 404)
+ * example array("/lib/amd/src/search-input.js" => 200,
+ * "/lib/jabber/XMPP/README.txt" => 404)
  */
 function file_check($ch, $wwwroot, $files) {
 	$http_statuses = array();
 	
 	foreach ($files as $file) {
-		$url = "$wwwroot/$file";
+		$url = "$wwwroot$file";
 		curl_setopt($ch, CURLOPT_URL, $url);
 
 		if (curl_exec($ch) === false) {
@@ -90,10 +73,10 @@ function file_check($ch, $wwwroot, $files) {
  * etc.).  For example:
  *   array(
  *     'old' => array(
- *       'lib/jabber/XMPP/README.txt' => 200
+ *       '/lib/jabber/XMPP/README.txt' => 200
  *     ),
  *     'stale' => array(
- *       'lib/coursecatlib.php' => 404
+ *       '/lib/coursecatlib.php' => 404
  *     )
  */
 function softac_check($wwwroot, $ver) {
@@ -107,7 +90,7 @@ function softac_check($wwwroot, $ver) {
 
 	 // Remove subset of files checked by upgrade_stale_php_files_present()
 	$old_files = array_keys(array_diff_key(array_flip($old_files),
-				array_flip($someexamplesofremovedfiles)));
+				array_flip($someexamplesofremovedfiles[$ver])));
 
 	$results = array();
 	$ch = curl_init();
@@ -135,7 +118,7 @@ function softac_check($wwwroot, $ver) {
 	 // Check for "stale" files, the subset of files Moodle checks do not exist
 	 // before upgrade can proceed.  If all the "old" files get 404 responses
 	 // then there's probably no actual point also doing this check.
-	$results['stale'] = file_check($ch, $wwwroot, $someexamplesofremovedfiles);
+	$results['stale'] = file_check($ch, $wwwroot, $someexamplesofremovedfiles[$ver]);
 
 	curl_close($ch);
 	return $results;
