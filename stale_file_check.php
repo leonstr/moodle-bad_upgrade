@@ -14,6 +14,15 @@
 
 	// List from lib/upgradelib.php:upgrade_stale_php_files_present()
     $someexamplesofremovedfiles = array(
+		'not_in_MOODLE_400_STABLE' =>
+			array(
+				// Removed in 4.0.
+				'/admin/classes/task_log_table.php',
+				'/admin/cli/mysql_engine.php',
+				'/lib/babel-polyfill/polyfill.js',
+				'/lib/typo3/class.t3lib_cs.php',
+				'/question/tests/category_class_test.php',
+			),
 		'not_in_MOODLE_311_STABLE' => 
 			array(
 				// Removed in 3.11.

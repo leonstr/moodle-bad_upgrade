@@ -26,11 +26,21 @@ td.status-404 {
 	<body>
 <?php
 require_once('stale_file_check.php');
-$versions = array("not_in_MOODLE_310_STABLE" => "3.10",
-			"not_in_MOODLE_311_STABLE" => "3.11");
+$versions = array();
+$dir = new DirectoryIterator(dirname(__FILE__));
+
+foreach($dir as $file) {
+	$filename = $file->getFilename();
+
+	if (preg_match('/not_in_MOODLE_(\d)(\d{1,2})_STABLE/', $filename,
+					$matches)) {
+		$versions[$filename] = "{$matches[1]}.{$matches[2]}";
+	}
+}
+
 $url = "";
 $results = null;
-$ver = array_key_last($versions);
+$ver = array_key_first($versions);
 
 if (isset($_GET['wwwroot']) && isset($_GET['ver'])) {
 	$url = $_GET['wwwroot'];
@@ -84,7 +94,7 @@ if (!empty($results)) {
 ?>
 
 	<h1>Other old files</h1>
-	<p>Other old files which should not be present.</p>
+	<p>Other old files which should also not be present.</p>
 	<table>
 		<tr><th>File/dir</th><th>Status</th></tr>
 <?php
