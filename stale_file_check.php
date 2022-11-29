@@ -14,6 +14,13 @@
 
 	// List from lib/upgradelib.php:upgrade_stale_php_files_present()
     $someexamplesofremovedfiles = array(
+		'not_in_MOODLE_401_STABLE' =>
+			array(
+				// Removed in 4.1.
+				'/mod/forum/classes/task/refresh_forum_post_counts.php',
+				'/user/amd/build/participantsfilter.min.js',
+				'/user/amd/src/participantsfilter.js',
+			),
 		'not_in_MOODLE_400_STABLE' =>
 			array(
 				// Removed in 4.0.
