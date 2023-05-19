@@ -14,6 +14,15 @@
 
 	// List from lib/upgradelib.php:upgrade_stale_php_files_present()
     $someexamplesofremovedfiles = array(
+		'not_in_MOODLE_402_STABLE' =>
+			array(
+				// Removed in 4.2.
+				'not_in_MOODLE_401_STABLE' =>
+				'/admin/auth_config.php',
+				'/auth/yui/passwordunmask/passwordunmask.js',
+				'/lib/spout/readme_moodle.txt',
+				'/lib/yui/src/tooltip/js/tooltip.js',
+			),
 		'not_in_MOODLE_401_STABLE' =>
 			array(
 				// Removed in 4.1.
