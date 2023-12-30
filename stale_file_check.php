@@ -14,7 +14,7 @@
 
 	// List from lib/upgradelib.php:upgrade_stale_php_files_present()
     $someexamplesofremovedfiles = array(
-		'not_in_MOODLE_402_STABLE' =>
+		'not_in_MOODLE_403_STABLE' =>
 			[
                 // Removed in 4.3.
                 '/badges/ajax.php',
