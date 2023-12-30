@@ -15,47 +15,59 @@
 	// List from lib/upgradelib.php:upgrade_stale_php_files_present()
     $someexamplesofremovedfiles = array(
 		'not_in_MOODLE_402_STABLE' =>
-			array(
+			[
+                // Removed in 4.3.
+                '/badges/ajax.php',
+                '/course/editdefaultcompletion.php',
+                '/grade/amd/src/searchwidget/group.js',
+                '/lib/behat/extension/Moodle/BehatExtension/Locator/FilesystemSkipPassedListLocator.php',
+                '/lib/classes/task/legacy_plugin_cron_task.php',
+                '/mod/lti/ajax.php',
+                '/pix/f/archive.png',
+                '/user/repository.php',
+			],
+		'not_in_MOODLE_402_STABLE' =>
+			[
 				// Removed in 4.2.
 				'not_in_MOODLE_401_STABLE' =>
 				'/admin/auth_config.php',
 				'/auth/yui/passwordunmask/passwordunmask.js',
 				'/lib/spout/readme_moodle.txt',
 				'/lib/yui/src/tooltip/js/tooltip.js',
-			),
+			],
 		'not_in_MOODLE_401_STABLE' =>
-			array(
+			[
 				// Removed in 4.1.
 				'/mod/forum/classes/task/refresh_forum_post_counts.php',
 				'/user/amd/build/participantsfilter.min.js',
 				'/user/amd/src/participantsfilter.js',
-			),
+			],
 		'not_in_MOODLE_400_STABLE' =>
-			array(
+			[
 				// Removed in 4.0.
 				'/admin/classes/task_log_table.php',
 				'/admin/cli/mysql_engine.php',
 				'/lib/babel-polyfill/polyfill.js',
 				'/lib/typo3/class.t3lib_cs.php',
 				'/question/tests/category_class_test.php',
-			),
+			],
 		'not_in_MOODLE_311_STABLE' => 
-			array(
+			[
 				// Removed in 3.11.
 				'/customfield/edit.php',
 				'/lib/phpunit/classes/autoloader.php',
 				'/lib/xhprof/README',
 				'/message/defaultoutputs.php',
 				'/user/files_form.php',
-			),
+			],
 		'not_in_MOODLE_310_STABLE' => 
-			array(
+			[
 				// Removed in 3.10.
 				'/grade/grading/classes/privacy/gradingform_provider.php',
 				'/lib/coursecatlib.php',
 				'/lib/form/htmleditor.php',
 				'/message/classes/output/messagearea/contact.php',
-			),
+			],
 		);
 
 /**

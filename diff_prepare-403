@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Prepare a file listing files/dirs not in the target Moodle version that were
+# in previous versions, the versions the target version can directly upgrade
+# from (example: for Moodle 3.10 all the files in Moodle 3.5 to 3.9 that aren't
+# in Moodle 3.10).  Results are placed in /tmp/not_in_$target_branch.
+
+target_branch=MOODLE_403_STABLE
+upgradable_from=(MOODLE_311_STABLE MOODLE_{400..402}_STABLE)
+tempdir=`mktemp -d`
+old_cwd=$(pwd)
+
+if [ "$?" -ne "0" ]; then
+	>&2 echo "Error: Unable to create temporary directory."
+	exit 1
+fi
+
+ # I have a reference repo in /usr/share/repos/moodle
+git clone --reference-if-able /usr/share/repos/moodle \
+			git://git.moodle.org/moodle.git $tempdir/moodle
+
+cd $tempdir/moodle
+
+ # Order is important here: target version first then other branches.
+for branch in $target_branch ${upgradable_from[@]}; do
+	git checkout $branch
+	find -type f | sort > $tempdir/find-$branch
+	diff --changed-group-format='%<' --unchanged-group-format='' \
+				$tempdir/find-$branch $tempdir/find-$target_branch \
+				> $tempdir/diff-$branch
+	cp $tempdir/find-$target_branch $tempdir/$target_branch.diff
+
+	if [ "$branch" != "$target_branch" ]; then
+		comm -3 $tempdir/$target_branch.diff $tempdir/diff-$branch \
+					> $tempdir/$target_branch.diff
+	fi
+done
+
+sed -i 's/^\s\+.//' $tempdir/$target_branch.diff
+sed -i '/^\/\.git/d' $tempdir/$target_branch.diff
+sed -i '/^\/\.travis\.yml/d' $tempdir/$target_branch.diff
+mv $tempdir/$target_branch.diff /tmp/not_in_$target_branch
+rm -rf $tempdir
+cd $old_cwd
